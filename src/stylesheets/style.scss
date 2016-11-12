@@ -1,4 +1,6 @@
 /* ---- reset ---- */ 
+@import 'palette.scss';
+
 body{ 
 	margin:0; 
 	font:normal 75% Arial, Helvetica, sans-serif; 
@@ -13,8 +15,7 @@ canvas{
 	position:absolute; 
 	width: 100%; 
 	height: 100%; 
-	background-color: #b61924; 
-	background-image: url(); 
+	background-color: $darkblue;
 	background-repeat: no-repeat; 
 	background-size: cover; 
 	background-position: 50% 50%; 
