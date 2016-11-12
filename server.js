@@ -2,7 +2,6 @@ var express = require("express");
 var app = express()
 var Massive = require("massive");
 var bodyParser = require('body-parser')
-
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
@@ -18,7 +17,6 @@ uid | # conversations | # Respect points | # Convince Points
 
 Conversation:
 conversation_id | topic_id | datetime | uid_1 (no)| uid_2 (yes) | P1_Convince | P1_Resp | P2_Convince | P2_Resp
-
 
 Topic:
 topic_ID | topic_heading | topic_body | total # conversations
