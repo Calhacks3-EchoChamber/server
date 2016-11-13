@@ -45,17 +45,18 @@ endpoint - /user/login
 */
 app.post("/user/login", function(req, res){
 	var uid = req.body.uid;
-	console.log(db);
-	console.log(db.users);
 	db.users.find({uid}, function(err, data){
 		if(err){
+			console.log(err);
 			res.status(400).end();
 		}
 		else if (!data) {
+			console.log('im in da place');
 			db.user.insert([{"uid": uid, "num_conversations" :0, "num_r_points": 0, "num_c_points": 0}]);
 			res.end();
 		}
 		else {
+			console.log("wtf i'm doing here");
 			res.end();
 		}
 		res.end();
