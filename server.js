@@ -10,7 +10,7 @@ var connectionString = "postgres://vffougnqvnzism:nkuWUDOJifOtnvKsRw--McEs7q@ec2
 var massiveInstance = massive.connectSync({connectionString : connectionString});
 // Set a reference to the massive instance on Express' app:
 app.set('postgresql-clean-93673', massiveInstance);
-var db = app.get('db');
+var db = app.get('postgresql-clean-93673');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
