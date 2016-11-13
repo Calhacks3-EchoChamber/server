@@ -47,6 +47,7 @@ endpoint - /user/login
 */
 app.post("/user/login", function(req, res){
 	var uid = req.body.uid;
+	console.log(uid);
 	db.users.find({uid}, function(err, data){
 		if(err){
 			res.status(400).end();
