@@ -3,9 +3,9 @@ var app = express()
 var Massive = require("massive");
 var bodyParser = require('body-parser')
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 var connectionString = "postgres://vffougnqvnzism:nkuWUDOJifOtnvKsRw--McEs7q@ec2-23-23-226-41.compute-1.amazonaws.com:5432/dbtua7m2hj3f1d?ssl=true";
 
@@ -331,7 +331,7 @@ app.get("/topics/list", function(req, res){
 
 
 
-var server = app.listen(env.PORT, function(){
+var server = app.listen(process.env.PORT, function(){
 	var host = server.address().address
 	var port = server.address().port
 	console.log("Example app listening at http://%s:%s", host, port)
