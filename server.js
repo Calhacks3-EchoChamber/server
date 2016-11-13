@@ -7,7 +7,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-var connectionString = "postgres://vffougnqvnzism:nkuWUDOJifOtnvKsRw--McEs7q@ec2-23-23-226-41.compute-1.amazonaws.com:5432/dbtua7m2hj3f1d?ssl=true";
+var connectionString = "postgres://vffougnqvnzism:nkuWUDOJifOtnvKsRw--McEs7q@ec2-23-23-226-41.compute-1.amazonaws.com:5432/dbtua7m2hj3f1d";
 
 // connect to Massive and get the db instance. You can safely use the
 // convenience sync method here because its on app load
