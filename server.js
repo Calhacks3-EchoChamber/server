@@ -293,7 +293,7 @@ app.post("/topics/new", function(req, res){
 		if(err){
 			res.status(400).end();
 		}
-		else if(topic){
+		else if(topic.length > 0){
 			console.log("Duplicate topic not added");
 			res.status(400).send("Duplicate topic not added");
 		}
