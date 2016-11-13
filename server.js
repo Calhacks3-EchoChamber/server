@@ -52,7 +52,7 @@ app.post("/user/login", function(req, res){
 		}
 		else if (data.length <= 0) {
 			console.log('im in da place');
-			db.users.insert([{"uid": uid, "num_conversations" :0, "num_r_points": 0, "num_c_points": 0}]);
+			db.users.insert([{"uid": uid, "num_conversations" :0, "num_r_points": 0, "num_c_points": 1}]);
 			res.end();
 		}
 		else {
@@ -95,9 +95,11 @@ app.post("/conversation/new", function(req,res){
 		if (err) {
 			res.status(400).end();
 		}
-		if(data.length <= 0){//couldn't find anyone who needs a conversation partner, puts a new row in the table and returns a random conversation_id
+		if(data.length <= 0){//couldn't find anyone who needs a conversation partner, puts a new row in the table 
+							 //and returns a random conversation_id
 			var conversation_id = Math.random().toString(36).slice(2);
-			db.conversations.save({"uid": uid, "topic_id":topic_id, "opinion_id":opinion_id, "conversation_id":conversation_id}, function(err, res){
+			db.conversations.save({"uid": uid, "topic_id":topic_id, "opinion_id":opinion_id, 
+				"conversation_id":conversation_id}, function(err, res){
 				if(err){
 					console.log(err.stack);
 					res.status(500).end();
@@ -159,7 +161,8 @@ app.post("/conversation/leave", function(req, res){
 				var resp_colname = "p1_resp";
 				other_id = p1;				
 			}
-			db.conversations.save({"conversation_id": conversation_id, convince_colname: convince, resp_colname: respect}, function(err, res) {
+			db.conversations.save({"conversation_id": conversation_id, convince_colname: convince, resp_colname: respect}, 
+				function(err, res) {
 				if (err || !other_id) {
 					console.log('error in updating conversation table')
 					res.end();
@@ -172,7 +175,8 @@ app.post("/conversation/leave", function(req, res){
 			var num_conversations = data['num_conversations'] + 1;
 			var num_r_points = data['num_r_points'] + respect;
 			var num_c_points = data['num_c_points'] + convince;
-			db.users.save({"uid": other_id, "num_conversations": num_conversations, "num_c_points": num_c_points, "num_r_points": num_r_points}, function(err, response) {
+			db.users.save({"uid": other_id, "num_conversations": num_conversations, "num_c_points": num_c_points, 
+				"num_r_points": num_r_points}, function(err, response) {
 				if (err || !topic_id) {
 					console.log('error in updating user table');
 					res.end();
