@@ -52,7 +52,7 @@ app.post("/user/login", function(req, res){
 		}
 		else if (data.length <= 0) {
 			console.log('im in da place');
-			db.user.insert([{"uid": uid, "num_conversations" :0, "num_r_points": 0, "num_c_points": 0}]);
+			db.users.insert([{"uid": uid, "num_conversations" :0, "num_r_points": 0, "num_c_points": 0}]);
 			res.end();
 		}
 		else {
@@ -95,7 +95,7 @@ app.post("/conversation/new", function(req,res){
 		if (err) {
 			res.status(400).end();
 		}
-		if(!data){//couldn't find anyone who needs a conversation partner, puts a new row in the table and returns a random conversation_id
+		if(data.length <= 0){//couldn't find anyone who needs a conversation partner, puts a new row in the table and returns a random conversation_id
 			var conversation_id = Math.random().toString(36).slice(2);
 			db.conversations.save({"uid": uid, "topic_id":topic_id, "opinion_id":opinion_id, "conversation_id":conversation_id}, function(err, res){
 				if(err){
@@ -258,7 +258,7 @@ app.get("/user/:uid/profile", function(req, res){
 app.get("/topics/trending", function(req, res){
 		db.topics.run("SELECT topic_name, COUNT(*) FROM topics GROUP BY topic_name ORDER BY COUNT(*) DESC",
 		function (err, trends) {
-			if(err || !trends) {
+			if(err || trends.length <= 0) {
 		  		res.status(400).end();
 		  	}
 		  	else {
