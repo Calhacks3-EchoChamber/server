@@ -204,7 +204,7 @@ app.post("/conversation/leave", function(req, res){
 		List of conversation_id
 */
 app.get("/conversation/archive", function(req, res) {
-	var uid = req.body.uid;
+	var uid = req.params.uid;
 
 	db.conversations.where("uid_1=$1 OR uid_2=$2", [uid, uid], function(err, data){
 		if(err){
