@@ -97,8 +97,8 @@ app.post("/conversation/new", function(req, res) {
 			var newConversation = {
 				topic_id,
 				conversation_id,
-				column_to_check : uid,
-				column_to_write_zero : 0,
+				"column_to_check" : uid,
+				"column_to_write_zero" : 0,
 			};
 
 			db.conversations.insert(newConversation, function(err, result){
