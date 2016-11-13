@@ -93,7 +93,9 @@ app.post("/conversation/new", function(req,res){
 	}
 	console.log("Col to check "+column_to_check);
 	var search = {"topic_id": topic_id};
+	console.log(search);
 	search[column_to_check] = 0;
+	console.log(search);
 	db.conversations.find(search, function(err, data){
 		if (err) {
 			res.status(400).end();
