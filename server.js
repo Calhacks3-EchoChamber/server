@@ -51,7 +51,7 @@ app.post("/user/login", function(req, res){
 			res.status(400).end();
 		}
 		else if (data.length === 0) {
-			db.users.insert([{"uid": uid, "num_conversations" :0, "num_r_points": 0, "num_c_points": 1}]);
+			db.users.insert([{"uid": uid, "num_conversations" :0, "num_r_points": 0, "num_c_points": 0}]);
 			res.end();
 		}
 		else {
@@ -81,8 +81,8 @@ app.post("/conversation/new", function(req, res) {
 		return res.status(400).end("Invalid value for opinion_id");
 	}
 
-	var column_to_check = opinion_id === 0 ? "uid_1" : "uid_2";
-	var column_to_write_zero = opinion_id === 1 ? "uid_2" : "uid_1";
+	var column_to_check = opinion_id == 0 ? "uid_1" : "uid_2";
+	var column_to_write_zero = opinion_id == 1 ? "uid_1" : "uid_2";
 
 	var search = { topic_id };
 	search[column_to_check] = 0;
