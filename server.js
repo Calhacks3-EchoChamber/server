@@ -56,6 +56,7 @@ app.post("/user/login", function(req, res){
 			res.end();
 		}
 		else {
+			console.log(data);
 			console.log("wtf i'm doing here");
 			res.end();
 		}
