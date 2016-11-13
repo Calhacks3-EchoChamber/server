@@ -99,13 +99,14 @@ app.post("/conversation/new", function(req,res){
 	db.conversations.find(search, function(err, data){
 		if (err) {
 			res.status(400).end();
+			return;
 		}
 		if(!data || data.length <= 0){//couldn't find anyone who needs a conversation partner, puts a new row in the table 
 							 //and returns a random conversation_id
 			console.log(search);
 			console.log(data);
 			var conversation_id = Math.random().toString(36).slice(2);
-			search["conversation_id"] = conversation_id;
+			search.conversation_id = conversation_id;
 			console.log(search);
 			search[column_to_check] = uid;
 			search[column_to_write_zero] = 0;
