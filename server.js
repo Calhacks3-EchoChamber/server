@@ -50,7 +50,7 @@ app.post("/user/login", function(req, res){
 			console.log(err);
 			res.status(400).end();
 		}
-		else if (data.length <= 0) {
+		else if (data.length === 0) {
 			db.users.insert([{"uid": uid, "num_conversations" :0, "num_r_points": 0, "num_c_points": 1}]);
 			res.end();
 		}
@@ -73,74 +73,60 @@ app.post("/user/login", function(req, res){
 		Returns 404 if no user found to chat with
 		Returns 500 if error occured
 */
-app.post("/conversation/new", function(req,res){
+app.post("/conversation/new", function(req, res) {
 	var uid = req.body.uid;
 	var topic_id = req.body.topic_id;
 	var opinion_id = req.body.opinion_id;
-	var column_to_check = null;
-	var column_to_write_zero = null;
-	if (opinion_id == 0) {
-		column_to_check = "uid_1";
-		column_to_write_zero = "uid_2";
+	if (opinion_id != 0 && opinion_id != 1) {
+		return res.status(400).end("Invalid value for opinion_id");
 	}
-	else if (opinion_id == 1) {
-		column_to_check = "uid_2";
-		column_to_write_zero = "uid_1";
-	}
-	else {
-		var body = "Invalid value for opinion_id";
-		res.status(400).send(body);
-	}
-	console.log("Col to check "+column_to_check);
-	var search = {"topic_id": topic_id};
-	console.log(search);
+
+	var column_to_check = opinion_id == 0 ? "uid_1" : "uid_2";
+	var column_to_write_zero = opinion_id == 1 ? "uid_2" : "uid_1";
+
+	var search = { topic_id };
 	search[column_to_check] = 0;
-	console.log(search);
-	db.conversations.find(search, function(err, data){
+	db.conversations.find(search, function(err, data) {
 		if (err) {
-			res.status(400).end();
-			return;
+			return res.status(400).end();
 		}
-		if(!data || data.length <= 0){//couldn't find anyone who needs a conversation partner, puts a new row in the table 
-							 //and returns a random conversation_id
-			console.log(search);
-			console.log(data);
+
+		if(!data || data.length === 0) {//couldn't find anyone who needs a conversation partner, puts a new row in the table 
+							 //and returns a random conversation_id	
 			var conversation_id = Math.random().toString(36).slice(2);
-			search.conversation_id = conversation_id;
-			console.log(search);
-			search[column_to_check] = uid;
-			search[column_to_write_zero] = 0;
-			db.conversations.insert(search, function(err, result){
-				if(err){
+			var newConversation = {
+				topic_id,
+				conversation_id,
+				column_to_check : uid,
+				column_to_write_zero : 0,
+			};
+
+			db.conversations.insert(newConversation, function(err, result){
+				if (err){
 					console.log(err.stack);
 					res.status(500).end();
-				}
-				else {
-					console.log("Result is "+result);
-					var body = {
-						"conversation_id":conversation_id
-					};
-					res.status(201).json(body);
+				} else {
+					console.log("Result is " + result);
+					res.status(201).json({ conversation_id });
 				}
 			});
-		}
-		else { //found someone who needs a conversation partner
+		} else { //found someone who needs a conversation partner
 			var match = data[0];
-			var search = {"topic_id": topic_id};
-			search["conversation_id"] = match["conversation_id"]
+			var search = {
+				topic_id,
+				conversation_id: match.conversation_id,
+				datetime: Math.round(new Date().getTime() / 1000)
+			};
 			search[column_to_check] = uid;
-			search["datetime"] = Math.round(new Date().getTime()/1000);
-			console.log(search);
+			
 			db.conversations.save(search, function(err, result){
-				if(err){
-					console.log("Error here "+err.stack);
+				if (err){ 
+					console.log("Error here " + err.stack);
 					res.status(400).end();
 				}
 			});
-			var body = {
-				"conversation_id":match["conversation_id"]
-			};
-			res.json(body);
+
+			res.json({ conversation_id: match.conversation_id });
 		}
 	});
 })
@@ -164,7 +150,7 @@ app.post("/conversation/leave", function(req, res){
 	var convince = req.body.convince;
 	var other_id = null;
 	var topic_id = null;
-	if (respect == -1 || convince == -1) {
+	if (respect === -1 || convince === -1) {
 		db.conversations.destroy({"conversation_id": conversation_id});
 		res.end();
 	}
@@ -291,7 +277,7 @@ app.get("/user/:uid/profile", function(req, res){
 app.get("/topics/trending", function(req, res){
 		db.run("SELECT topic_name, COUNT(*) FROM topics GROUP BY topic_name ORDER BY COUNT(*) DESC",
 		function (err, trends) {
-			if(err || trends.length <= 0) {
+			if(err || trends.length === 0) {
 		  		res.status(400).end();
 		  	}
 		  	else {
