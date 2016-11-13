@@ -51,13 +51,10 @@ app.post("/user/login", function(req, res){
 			res.status(400).end();
 		}
 		else if (data.length <= 0) {
-			console.log('im in da place');
 			db.users.insert([{"uid": uid, "num_conversations" :0, "num_r_points": 0, "num_c_points": 1}]);
 			res.end();
 		}
 		else {
-			console.log(data);
-			console.log("wtf i'm doing here");
 			res.end();
 		}
 		res.end();
@@ -260,7 +257,7 @@ app.get("/user/:uid/profile", function(req, res){
 */
 
 app.get("/topics/trending", function(req, res){
-		db.topics.run("SELECT topic_name, COUNT(*) FROM topics GROUP BY topic_name ORDER BY COUNT(*) DESC",
+		db.run("SELECT topic_name, COUNT(*) FROM topics GROUP BY topic_name ORDER BY COUNT(*) DESC",
 		function (err, trends) {
 			if(err || trends.length <= 0) {
 		  		res.status(400).end();
