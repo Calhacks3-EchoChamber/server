@@ -81,8 +81,8 @@ app.post("/conversation/new", function(req, res) {
 		return res.status(400).end("Invalid value for opinion_id");
 	}
 
-	var column_to_check = opinion_id == 0 ? "uid_1" : "uid_2";
-	var column_to_write_zero = opinion_id == 1 ? "uid_2" : "uid_1";
+	var column_to_check = opinion_id === 0 ? "uid_1" : "uid_2";
+	var column_to_write_zero = opinion_id === 1 ? "uid_2" : "uid_1";
 
 	var search = { topic_id };
 	search[column_to_check] = 0;
@@ -96,10 +96,10 @@ app.post("/conversation/new", function(req, res) {
 			var conversation_id = Math.random().toString(36).slice(2);
 			var newConversation = {
 				topic_id,
-				conversation_id,
-				"column_to_check" : uid,
-				"column_to_write_zero" : 0,
+				conversation_id
 			};
+			newConversation[column_to_check] = uid;
+			newConversation[column_to_write_zero] = 0;
 
 			db.conversations.insert(newConversation, function(err, result){
 				if (err){
