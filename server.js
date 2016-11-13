@@ -1,21 +1,21 @@
 var express = require("express");
 var app = express()
-var Massive = require("massive");
+var massive = require("massive");
 var bodyParser = require('body-parser')
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
-app.use(bodyParser.json());
-
 var connectionString = "postgres://vffougnqvnzism:nkuWUDOJifOtnvKsRw--McEs7q@ec2-23-23-226-41.compute-1.amazonaws.com:5432/dbtua7m2hj3f1d?ssl=true";
 
 // connect to Massive and get the db instance. You can safely use the
 // convenience sync method here because its on app load
 // you can also use loadSync - it's an alias
-var massiveInstance = Massive.connectSync({connectionString : connectionString});
+var massiveInstance = massive.connectSync({connectionString : connectionString});
 // Set a reference to the massive instance on Express' app:
-app.set('db', massiveInstance);
+app.set('postgresql-clean-93673', massiveInstance);
 var db = app.get('db');
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/json
+app.use(bodyParser.json());
 /***
 tables:
 
