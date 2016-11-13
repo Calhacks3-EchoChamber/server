@@ -127,7 +127,7 @@ app.post("/conversation/new", function(req, res) {
 				}
 			});
 
-			res.json({ conversation_id: match.conversation_id });
+			res.status(200).json({ conversation_id: match.conversation_id });
 
 			console.log("Connected partners");
 		}
