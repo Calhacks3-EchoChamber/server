@@ -100,6 +100,7 @@ app.post("/conversation/new", function(req,res){
 		}
 		if(!data || data.length <= 0){//couldn't find anyone who needs a conversation partner, puts a new row in the table 
 							 //and returns a random conversation_id
+			console.log(search);
 			console.log(data);
 			var conversation_id = Math.random().toString(36).slice(2);
 			search["conversation_id"] = conversation_id;
