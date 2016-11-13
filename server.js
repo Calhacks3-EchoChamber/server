@@ -279,7 +279,7 @@ app.post("/topics/new", function(req, res){
 		}
 		else if(topic){
 			console.log("Duplicate topic not added");
-			res.status(400).end();
+			res.status(400).send("Duplicate topic not added");
 		}
 		else{
 			db.topics.insert({"topic_id":topic_id, "topic_body":topic_body, 
@@ -298,13 +298,25 @@ app.post("/topics/new", function(req, res){
 app.get("/topics/list", function(req, res){
 	var start_index = req.params.start;
 	var end_index = req.params.end;
-
 	if(end_index < start_index){
 		res.status(400).end();
 	}
 	else{
 		res.end();
 	}
+	db.products.find( {
+			columns: ["topic_id", "topic_heading", "topic_body", "num_conversations"],
+			order: "topic_heading incr",
+			offset: start_index,
+			limit: (end_index - start_index)
+		}, function (err, topics) {
+	  	if(err){
+	  		res.status(400).end();
+	  	}
+	  	else{
+	  		res.json(topics);
+	  	}
+	});
 })
 
 
