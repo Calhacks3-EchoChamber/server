@@ -50,7 +50,7 @@ app.post("/user/login", function(req, res){
 			console.log(err);
 			res.status(400).end();
 		}
-		else if (!data) {
+		else if (data.length <= 0) {
 			console.log('im in da place');
 			db.user.insert([{"uid": uid, "num_conversations" :0, "num_r_points": 0, "num_c_points": 0}]);
 			res.end();
