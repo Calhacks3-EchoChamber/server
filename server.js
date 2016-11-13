@@ -104,13 +104,14 @@ app.post("/conversation/new", function(req, res) {
 			db.conversations.insert(newConversation, function(err, result){
 				if (err){
 					console.log(err.stack);
-					res.status(500).end();
+					res.status(400).end();
 				} else {
 					console.log("Result is " + result);
 					res.status(201).json({ conversation_id });
 				}
 			});
 		} else { //found someone who needs a conversation partner
+			console.log("I found someone");
 			var match = data[0];
 			var search = {
 				topic_id,
@@ -127,6 +128,8 @@ app.post("/conversation/new", function(req, res) {
 			});
 
 			res.json({ conversation_id: match.conversation_id });
+
+			console.log("Connected partners");
 		}
 	});
 })
