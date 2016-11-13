@@ -1,5 +1,6 @@
 var express = require("express");
 var app = express()
+var path = require("path");
 var massive = require("massive");
 var bodyParser = require('body-parser')
 var connectionString = "postgres://vffougnqvnzism:nkuWUDOJifOtnvKsRw--McEs7q@ec2-23-23-226-41.compute-1.amazonaws.com:5432/dbtua7m2hj3f1d?ssl=true";
@@ -16,6 +17,8 @@ var db = app.get('dbtua7m2hj3f1d');
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
+
+app.use(express.static(path.join(__dirname, 'public')));
 /***
 tables:
 
@@ -91,8 +94,8 @@ app.post("/conversation/new", function(req, res) {
 			return res.status(400).end();
 		}
 
-		if(!data || data.length === 0) {//couldn't find anyone who needs a conversation partner, puts a new row in the table 
-							 //and returns a random conversation_id	
+		if(!data || data.length === 0) {//couldn't find anyone who needs a conversation partner, puts a new row in the table
+							 //and returns a random conversation_id
 			var conversation_id = Math.random().toString(36).slice(2);
 			var newConversation = {
 				topic_id,
@@ -121,7 +124,7 @@ app.post("/conversation/new", function(req, res) {
 			search[column_to_check] = uid;
 			
 			db.conversations.save(search, function(err, result){
-				if (err){ 
+				if (err){
 					console.log("Error here " + err.stack);
 					res.status(400).end();
 				}
@@ -140,7 +143,7 @@ app.post("/conversation/new", function(req, res) {
 		If receives -1, removes conversation_id from conversation table
 		Post
 			uid: id of user leaving
-			conversation_id: id of conversation to leave 
+			conversation_id: id of conversation to leave
 			respect: x (out of 10, -1 if doesn’t count)
 			convince: y (-1 if doesn’t count)
 		Returns
@@ -167,25 +170,25 @@ app.post("/conversation/leave", function(req, res){
 				var convince_colname = "p2_convince";
 				var resp_colname = "p2_resp";
 				other_id = p2;
-			} 
+			}
 			else {
 				var convince_colname = "p1_convince";
 				var resp_colname = "p1_resp";
-				other_id = p1;				
+				other_id = p1;
 			}
 
 			var updated = {"conversation_id": conversation_id};
 			updated[convince_colname] = convince;
 			updated[resp_colname] = respect;
 
-			db.conversations.save(updated, 
+			db.conversations.save(updated,
 				function(err, result) {
 				if (err) {
 					console.log(err.stack);
 					console.log('error in updating conversation table')
 					res.end();
 				}
-			});	
+			});
 		});
 		// users:
 		// uid | num_conversations | num_r_points | num_c_points
@@ -193,13 +196,13 @@ app.post("/conversation/leave", function(req, res){
 			var num_conversations = data['num_conversations'] + 1;
 			var num_r_points = data['num_r_points'] + respect;
 			var num_c_points = data['num_c_points'] + convince;
-			db.users.save({"uid": other_id, "num_conversations": num_conversations, "num_c_points": num_c_points, 
+			db.users.save({"uid": other_id, "num_conversations": num_conversations, "num_c_points": num_c_points,
 				"num_r_points": num_r_points}, function(err, response) {
 				if (err) {
 					console.log('error in updating user table');
 					res.end();
 				}
-			});	
+			});
 		});
 		// topics:
 		// topic_ID | topic_heading | topic_body | total # conversations
@@ -316,7 +319,7 @@ app.post("/topics/new", function(req, res){
 			res.status(400).send("Duplicate topic not added");
 		}
 		else{
-			db.topics.insert({"topic_id":topic_id, "topic_body":topic_body, 
+			db.topics.insert({"topic_id":topic_id, "topic_body":topic_body,
 				"topic_heading":topic_heading, "num_conversations":0}, function(err, created_topic){
 					if(err || created_topic){
 						res.status(400).end();
