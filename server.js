@@ -122,12 +122,14 @@ app.post("/conversation/new", function(req,res){
 		}
 		else { //found someone who needs a conversation partner
 			var match = data[0];
+			var search = {"topic_id": topic_id};
+			search["conversation_id"] = match["conversation_id"]
 			search[column_to_check] = uid;
-			search["datetime"] = Date();
+			search["datetime"] = Math.round(new Date().getTime()/1000);
 			console.log(search);
 			db.conversations.save(search, function(err, result){
 				if(err){
-					console.log(err.stack);
+					console.log("Error here "+err.stack);
 					res.status(400).end();
 				}
 			});
