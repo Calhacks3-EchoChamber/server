@@ -78,39 +78,59 @@ app.post("/conversation/new", function(req,res){
 	var topic_id = req.body.topic_id;
 	var opinion_id = req.body.opinion_id;
 	var column_to_check = null;
-	if (opinion_id === 0) {
+	var column_to_write_zero = null;
+	if (opinion_id == 0) {
 		column_to_check = "uid_1";
+		column_to_write_zero = "uid_2";
 	}
-	else if (opinion_id === 1) {
+	else if (opinion_id == 1) {
 		column_to_check = "uid_2";
+		column_to_write_zero = "uid_1";
 	}
 	else {
 		var body = "Invalid value for opinion_id";
 		res.status(400).send(body);
 	}
-	db.conversations.find({"topic_id": topic_id, column_to_check: 0}, function(err, data){
+	console.log("Col to check "+column_to_check);
+	var search = {"topic_id": topic_id};
+	search[column_to_check] = 0;
+	db.conversations.find(search, function(err, data){
 		if (err) {
 			res.status(400).end();
 		}
-		if(data.length <= 0){//couldn't find anyone who needs a conversation partner, puts a new row in the table 
+		if(!data || data.length <= 0){//couldn't find anyone who needs a conversation partner, puts a new row in the table 
 							 //and returns a random conversation_id
+			console.log(data);
 			var conversation_id = Math.random().toString(36).slice(2);
-			db.conversations.save({"uid": uid, "topic_id":topic_id, "opinion_id":opinion_id, 
-				"conversation_id":conversation_id}, function(err, res){
+			search["conversation_id"] = conversation_id;
+			console.log(search);
+			search[column_to_check] = uid;
+			search[column_to_write_zero] = 0;
+			db.conversations.insert(search, function(err, result){
 				if(err){
 					console.log(err.stack);
 					res.status(500).end();
 				}
 				else {
+					console.log("Result is "+result);
 					var body = {
 						"conversation_id":conversation_id
 					};
-					res.status(404).json(body);
+					res.status(201).json(body);
 				}
 			});
 		}
 		else { //found someone who needs a conversation partner
 			var match = data[0];
+			search[column_to_check] = uid;
+			search["datetime"] = Date();
+			console.log(search);
+			db.conversations.save(search, function(err, result){
+				if(err){
+					console.log(err.stack);
+					res.status(400).end();
+				}
+			});
 			var body = {
 				"conversation_id":match["conversation_id"]
 			};
@@ -138,7 +158,7 @@ app.post("/conversation/leave", function(req, res){
 	var convince = req.body.convince;
 	var other_id = null;
 	var topic_id = null;
-	if (respect === -1 || convince === -1) {
+	if (respect == -1 || convince == -1) {
 		db.conversations.destroy({"conversation_id": conversation_id});
 		res.end();
 	}
@@ -158,9 +178,15 @@ app.post("/conversation/leave", function(req, res){
 				var resp_colname = "p1_resp";
 				other_id = p1;				
 			}
-			db.conversations.save({"conversation_id": conversation_id, convince_colname: convince, resp_colname: respect}, 
-				function(err, res) {
-				if (err || !other_id) {
+
+			var updated = {"conversation_id": conversation_id};
+			updated[convince_colname] = convince;
+			updated[resp_colname] = respect;
+
+			db.conversations.save(updated, 
+				function(err, result) {
+				if (err) {
+					console.log(err.stack);
 					console.log('error in updating conversation table')
 					res.end();
 				}
@@ -174,7 +200,7 @@ app.post("/conversation/leave", function(req, res){
 			var num_c_points = data['num_c_points'] + convince;
 			db.users.save({"uid": other_id, "num_conversations": num_conversations, "num_c_points": num_c_points, 
 				"num_r_points": num_r_points}, function(err, response) {
-				if (err || !topic_id) {
+				if (err) {
 					console.log('error in updating user table');
 					res.end();
 				}
